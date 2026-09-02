@@ -69,11 +69,7 @@ $ubicaciones = $conexion->query($sql);
                                     <td><?= $ubicacion['comentario'] ?></td>
                                     <td class="text-end">
                                         <a href="formUbicacion.php?id=<?= $ubicacion['ubicacion_id'] ?>" class="btn btn-sm btn-outline-primary">Editar</a>
-                                        <<<<<<< HEAD
-                                            <a href="borrarUbicacion.php?id=<?= $ubicacion['ubicacion_id'] ?>" class="btn btn-sm btn-outline-danger">Borrar</a>
-                                            =======
-                                            <a href="borrar.php?id=<?= $ubicacion['ubicacion_id'] ?>" class="btn btn-sm btn-outline-danger">Borrar</a>
-                                            >>>>>>> 80b1fca980005b34a6ff776854643488e4cb20d0
+                                        <a href="borrarUbicacion.php?id=<?= $ubicacion['ubicacion_id'] ?>" class="btn btn-sm btn-outline-danger">Borrar</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
