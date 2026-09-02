@@ -1,8 +1,56 @@
 <?php
-require_once 'db.php';
+session_start();
 
-$sql = 'SELECT * FROM ubicacion WHERE activo = 1';
-$ubicaciones = $conexion->query($sql);
+require_once('db.php');
+
+if ($_SERVER["REQUEST_METHOD"] == 'POST') {
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $sql = "SELECT * FROM usuario WHERE email = '$email'";
+    $resultado = $conexion->execute_query($sql);
+    $datosUsuario = $resultado->fetch_assoc();
+
+    if ($datosUsuario) {
+
+        // Encontramos el usuario.
+        // Ahora verificamos su contraseña.
+
+        $nombreUsuario = $datosUsuario['nombre'];
+        $hashUsuario = $datosUsuario['password_hash'];
+        $rolUsuario = $datosUsuario['rol_id'];
+
+        $passwordVerificado = password_verify($password, $hashUsuario);
+
+        if ($passwordVerificado) {
+
+            $_SESSION["usuario_id"] = $datosUsuario["usuario_id"];
+            $_SESSION["nombre"] = $datosUsuario["nombre"];
+            $_SESSION["rol_id"] = $datosUsuario["rol_id"];
+
+            //de que rol se trata?
+            $sqlRoles = "SELECT * FROM rol";
+            $resultadoRoles = $conexion->query($sqlRoles);
+            $rolUsuario = null;
+            foreach ($resultadoRoles as $res) {
+                if ($res['rol_id'] == $datosUsuario["rol_id"]) {
+                    $rolUsuario = $res['nombre'];
+                    $_SESSION["rol"] = $rolUsuario;
+                }
+            }
+
+            header("Location: ubicaciones.php");
+            exit;
+        }
+    } else {
+
+        echo "Usuario no encontrado";
+    }
+}
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -11,52 +59,38 @@ $ubicaciones = $conexion->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ubicaciones | SGRSI</title>
+    <title>Bienvenido | SGRSI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">SGRSI &middot; Gestión de Ubicaciones</span>
+            <span class="navbar-brand mb-0 h1">SGRSI &middot; Login</span>
         </div>
     </nav>
 
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="h3 mb-0">Listado de ubicaciones</h1>
-            <a href="formUbicacion.php" class="btn btn-primary">Crear ubicación</a>
-        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-5">
+                <h1 class="h3 mb-3">Bienvenido</h1>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Lugar</th>
-                                <th>Comentario</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- así se usa este bucle de php dentro del html -->
-                            <?php foreach ($ubicaciones as $ubicacion): ?>
-                                <tr>
-                                    <td><?= $ubicacion['ubicacion_id'] ?></td>
-                                    <td><?= $ubicacion['lugar'] ?></td>
-                                    <td><?= $ubicacion['comentario'] ?></td>
-                                    <td class="text-end">
-                                        <a href="formUbicacion.php?id=<?= $ubicacion['ubicacion_id'] ?>" class="btn btn-sm btn-outline-primary">Editar</a>
-                                        <a href="borrar.php?id=<?= $ubicacion['ubicacion_id'] ?>" class="btn btn-sm btn-outline-danger">Borrar</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Usuario:</label>
+                                <input id="email" type="text" name="email" class="form-control">
+                            </div>
 
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Clave:</label>
+                                <input id="password" type="password" name="password" class="form-control">
+                            </div>
 
-                        </tbody>
-                    </table>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

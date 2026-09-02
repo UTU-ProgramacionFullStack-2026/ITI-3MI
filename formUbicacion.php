@@ -1,4 +1,8 @@
 <?php
+
+session_start();
+$nombreUsuario = $_SESSION["nombre"];
+
 require_once 'db.php';
 
 $idUbicacion = null;
@@ -71,7 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">SGRSI &middot; Gestión de Ubicaciones</span>
+            <span class="navbar-brand mb-0 h1">SGRSI &middot; Gestión de Ubicaciones - Hola: <?= $nombreUsuario ?></span>
+            <a href="ubicaciones.php" class="btn btn-secondary">Volver al listado</a>
+            <?php if (isset($_SESSION['usuario_id'])): ?>
+                <a href="logout.php">Cerrar sesión</a>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -112,8 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         <pre class="mb-0"><?= $sql ?></pre>
                     </div>
                 </div>
-
-                <a href="index.php" class="btn btn-secondary">Volver al listado</a>
             </div>
         </div>
     </div>
